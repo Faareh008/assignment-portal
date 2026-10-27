@@ -39,3 +39,12 @@ jobs:
           RECEIVER_URL: ${{ secrets.RECEIVER_URL }}
           REPORT_RECEIVER_TOKEN: ${{ secrets.RECEIVER_TOKEN }}
         run: python send_report.py
+        
+    
+      - name: Email test report through Gmail
+        if: always() && github.event_name == 'push'
+        env:
+          GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+        run: python send_email.py
+

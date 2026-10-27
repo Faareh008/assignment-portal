@@ -28,5 +28,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run automated tests
-        run: python -m pytest -v
+      - name: Run automated tests and create JSON report
+        id: tests
+        run: |
+          python -m pytest -v --json-report --json-report-file=pytest-report.json
+
+      - name: Send test report to local computer
+        if: always()
+        env:
+          RECEIVER_URL: ${{ secrets.RECEIVER_URL }}
+          REPORT_RECEIVER_TOKEN: ${{ secrets.RECEIVER_TOKEN }}
+        run: python send_report.py

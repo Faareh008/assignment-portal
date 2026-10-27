@@ -5,3 +5,4 @@ __pycache__/
 submissions.json
 test-report.json
 .env
+pytest-report.json

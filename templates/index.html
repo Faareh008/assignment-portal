@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assignment Submission Portal</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f4f6f9;
+            color: #222;
+        }
+
+        h1, h2 {
+            color: #183b66;
+        }
+
+        .card {
+            background: white;
+            padding: 24px;
+            margin-bottom: 24px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px #00000012;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        input {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 11px;
+            margin-top: 6px;
+            border: 1px solid #bbb;
+            border-radius: 5px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            background: #183b66;
+            color: white;
+            cursor: pointer;
+        }
+
+        .error {
+            color: #b42318;
+            background: #fee4e2;
+            padding: 12px;
+        }
+
+        .success {
+            color: #067647;
+            background: #d1fadf;
+            padding: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border: 1px solid #ddd;
+            overflow-wrap: anywhere;
+        }
+
+        th {
+            background: #e8eef5;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Assignment Submission Portal</h1>
+    <p>Enter your details to submit an assignment link.</p>
+
+    <div class="card">
+        <h2>Submit Assignment</h2>
+
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+
+        {% if success %}
+            <p class="success">{{ success }}</p>
+        {% endif %}
+
+        <form method="POST" action="/">
+            <label for="name">Student Name</label>
+            <input id="name" name="name" type="text"
+                   value="{{ request.form.get('name', '') }}"
+                   required>
+
+            <label for="reg_no">Registration Number</label>
+            <input id="reg_no" name="reg_no" type="text"
+                   value="{{ request.form.get('reg_no', '') }}"
+                   required>
+
+            <label for="title">Assignment Title</label>
+            <input id="title" name="title" type="text"
+                   value="{{ request.form.get('title', '') }}"
+                   required>
+
+            <label for="submission_url">Submission URL</label>
+            <input id="submission_url" name="submission_url"
+                   type="url" placeholder="https://example.com"
+                   value="{{ request.form.get('submission_url', '') }}"
+                   required>
+
+            <button type="submit">Submit Assignment</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>Submitted Assignments</h2>
+
+        {% if submissions %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Registration Number</th>
+                        <th>Assignment Title</th>
+                        <th>Submission URL</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for item in submissions %}
+                        <tr>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.reg_no }}</td>
+                            <td>{{ item.title }}</td>
+                            <td>
+                                <a href="{{ item.submission_url }}"
+                                   target="_blank"
+                                   rel="noopener noreferrer">
+                                    Open Submission
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No assignments submitted yet.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

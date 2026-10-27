@@ -1,0 +1,159 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assignment Submission Portal</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f4f7fb;
+      color: #1f2937;
+    }
+    h1 { color: #174ea6; }
+    form, .submissions {
+      background: white;
+      padding: 22px;
+      border-radius: 10px;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 8px #00000012;
+    }
+    label { display: block; margin-top: 12px; }
+    input {
+      box-sizing: border-box;
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+    }
+    button {
+      margin-top: 18px;
+      padding: 11px 18px;
+      border: 0;
+      border-radius: 5px;
+      background: #174ea6;
+      color: white;
+      cursor: pointer;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    th, td {
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+      padding: 10px;
+      overflow-wrap: anywhere;
+    }
+    .notice { color: #166534; }
+    .small { color: #555; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <h1>Assignment Submission Portal</h1>
+  <p>Submit your assignment details using the form below.</p>
+  <p class="small">
+    Static demonstration hosted on GitHub Pages. Entries are stored
+    in this browser only; this demo does not connect to the Flask backend.
+  </p>
+
+  <form id="submissionForm">
+    <label for="name">Student Name</label>
+    <input id="name" name="name" required>
+
+    <label for="reg_no">Registration Number</label>
+    <input id="reg_no" name="reg_no" required>
+
+    <label for="title">Assignment Title</label>
+    <input id="title" name="title" required>
+
+    <label for="submission_url">Submission URL</label>
+    <input id="submission_url" name="submission_url"
+           type="url" placeholder="https://github.com/your-repository"
+           required>
+
+    <button type="submit">Submit Assignment</button>
+    <p id="message" class="notice" role="status"></p>
+  </form>
+
+  <section class="submissions">
+    <h2>Submitted Assignments</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Registration No.</th>
+          <th>Assignment</th>
+          <th>Submission</th>
+        </tr>
+      </thead>
+      <tbody id="submissionList"></tbody>
+    </table>
+  </section>
+
+  <script>
+    const form = document.getElementById("submissionForm");
+    const message = document.getElementById("message");
+    const list = document.getElementById("submissionList");
+    const storageKey = "assignmentPortalDemoSubmissions";
+
+    function getSubmissions() {
+      try {
+        return JSON.parse(localStorage.getItem(storageKey) || "[]");
+      } catch {
+        return [];
+      }
+    }
+
+    function displaySubmissions() {
+      list.replaceChildren();
+
+      getSubmissions().forEach((item) => {
+        const row = document.createElement("tr");
+
+        [item.name, item.reg_no, item.title].forEach((value) => {
+          const cell = document.createElement("td");
+          cell.textContent = value;
+          row.appendChild(cell);
+        });
+
+        const linkCell = document.createElement("td");
+        const link = document.createElement("a");
+        link.href = item.submission_url;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = "Open Submission";
+        linkCell.appendChild(link);
+        row.appendChild(linkCell);
+        list.appendChild(row);
+      });
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const data = Object.fromEntries(new FormData(form).entries());
+
+      try {
+        const url = new URL(data.submission_url);
+        if (!["http:", "https:"].includes(url.protocol)) {
+          throw new Error("Invalid URL protocol");
+        }
+
+        const submissions = getSubmissions();
+        submissions.push(data);
+        localStorage.setItem(storageKey, JSON.stringify(submissions));
+
+        form.reset();
+        message.textContent = "Assignment submitted successfully!";
+        displaySubmissions();
+      } catch {
+        message.textContent =
+          "Please enter a valid HTTP or HTTPS submission URL.";
+      }
+    });
+
+    displaySubmissions();
+  </script>
+</body>
+</html>
